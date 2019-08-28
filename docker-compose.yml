@@ -1,0 +1,20 @@
+version: '2'
+services:
+
+    web:
+        build: .
+        ports:
+            - "5000:5000"
+        volumes:
+            - .:/code
+        depends_on:
+            - redis
+
+    redis:
+        image: redis
+
+    postgres:
+        ports:
+            - '5436:5432'
+        restart: always
+        image: postgres:9.6.5-alpine

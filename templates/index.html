@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>productos y clientes</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" media="screen" href = "{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename='js/fuctions.js') }}"></script>
+  <link rel="stylesheet" media="screen" href = "{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'"></script>
+
+ 
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="row content">
+    <div class="col-sm-2">
+      <div class="sidenav">
+            <a href="/">Menu</a><br>
+            <a href="/products">Productos</a><br>
+            <a href="/customers">Clientes</a><br>
+            <a href="/assignation">Asignación</a>
+      </div>
+    </div>
+
+    <div  id="container" class="col-sm-7"> {% block container %}
+      <h4><small>Productos</small></h4>
+      <hr>
+      <h2>Productos cliente </h2>
+
+      <h4></h4>
+      <form role="form">
+        <div class="form-group">
+          <textarea class="form-control" rows="3" required></textarea>
+        </div>
+     
+      </form>
+      <br><br>
+
+      <div class="row">
+        <div class="col-sm-2 text-center">
+       
+        </div>
+        <div class="col-sm-10">
+          
+          <br>
+        </div>
+        <div class="col-sm-2 text-center">
+        
+        </div>
+        <div class="col-sm-10">
+         
+          <br>
+      
+          <div class="row">
+            <div class="col-sm-2 text-center">
+         
+            </div>
+            <div class="col-xs-10">
+              
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+<div class="col-sm-3" >
+</div>
+    
+{% endblock %}
+  </div>
+</div>
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

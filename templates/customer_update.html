@@ -1,0 +1,69 @@
+
+
+{% extends 'index.html' %}
+
+{% block container %}
+
+<div  class="col-xs-2">
+</div>
+
+    <div class="col-xs-10" > 
+    <h3>Actualizar Cliente</h3><br>
+    
+<form action="/updatec/{{customert.0}}" method="post">
+    <div class="form-group">
+        <label >Nombre: </label>
+        <input type="text"  name="name" class="form-control" value= "{{customert.1}}"  /><br><br>
+        <label >RFC: </label>
+        <input type="text"  name="rfc" class="form-control" value= "{{customert.2}}"/><br><br>
+        <label >Ciudad </label>
+        <input type="text"  name="city"class="form-control" value= "{{customert.3}}"/><br><br>
+        <label >Dirección </label>
+        <input type="text"  name="dire" class="form-control" value= "{{customert.4}}"/><br><br>
+        <input type="submit"  name="submit" value="Enviar" />
+     </div>  
+</form>  
+
+
+<div class="col-xs-6">
+    <form class="form-inline" method="POST" action="/funcion/{{customert.0}}" >
+        <div>
+              <span ><b>Selecciones sus productos</b></span>
+              <br><br>
+                <div class="form-group">
+                    <select style="width:550px" style="high:100px"  class="form-control" name="ids_select" multiple>
+                        {% for row in rows %}
+                            <option  value="{{row["id"]}}"  >{{row['nombre']}}</option>
+                        {% endfor %}
+                        {% for row in rows_pd %}
+                            <option  selected value="{{row["id"]}}" >{{row["producto"]}}</option>
+                        {% endfor %}
+                    </select>
+                 </div> 
+          <br><br>
+          <button type="submit">Almacenar</button>
+        </div>    
+    </form>
+        
+</div>
+
+    {% endblock %}
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

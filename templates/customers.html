@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+
+
+{% block container %}
+<div class="col-xs-2" ></div> 
+
+<div class="col-xs-10" > 
+
+   <h3>Clientes Registrados</h3><br>
+   <div class="row">
+
+        <div class="pull-right">
+         <a href="/newcustomers"> <button   class="btn btn-primary"><span class="glyphicon glyphicon-plus">Nuevo</span></button></a> 
+        </div>
+     </div>
+   <table class="table table-stripe" align="center">
+         <thead>
+            <th scope="col">Nombre</th>
+            <th scope="col">RFC</th>
+            <th scope="col">Ciudad</th>
+            <th scope="col">Dirección</th>
+            <th scope="col"></th>
+               
+         </thead>
+      
+            {% for rows in rows_c %}
+               <tr>
+                  <th scope="row"><a  type="hidden" href="/editcust/{{rows["id"]}}">{{rows["nombre"]}}</a></th>
+                  <th scope="row">{{rows["rfc"]}}</th>
+                  <th scope="row">{{ rows["ciudad"]}}</th>
+                  <th scope="row">{{ rows["direccion"]}}</th>
+                  <th scope="row"><a href="/deletec/{{rows["id"]}}" ><button onclick="return alerta()">Eliminar</button></a></th>
+                  </tr>
+            {% endfor %}
+   </table>
+
+      
+</div> 
+
+
+{% endblock %}
+

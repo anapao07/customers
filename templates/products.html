@@ -1,0 +1,45 @@
+{% extends 'index.html' %}
+<!-- Tabla Productos  -->
+
+{% block container %}
+<div class="col-xs-1" ></div> 
+
+<div class="col-xs-10" > 
+<h3>Productos Almacenados</h3><br>
+   
+<div class="row">
+ 
+   <div class="pull-right">
+      <a href="/newproducts"> <button   class="btn btn-primary"><span class="glyphicon glyphicon-plus">Nuevo</span></button></a>  
+</div>
+</div>
+<div style="width:750px; height:250px; overflow:auto;">
+   <table class="table table-stripe" align="center" height ="150px">
+         <thead>
+            <th scope="col">Nombre</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col"></th>
+               
+         </thead>
+      
+            {% for rows in rows_p %}
+               <tr>
+                  <th scope="row"><a  type="hidden" href="/edit/{{rows["id"]}}">{{rows["nombre"]}}</a></th>
+                  <td scope="row">{{rows["descripcion"]}}</td>
+                  <th scope="row">{{ rows["cantidad"]}}</th>
+                  <th scope="row"><a href="/delete/{{rows["id"]}}" ><button onclick="return alerta()">Eliminar</button></a></th>
+                  </tr>
+            {% endfor %}
+   </table>
+   </div>
+ 
+   <img src="{{ url_for('static', filename='../static/image/' +circle) }}"  />
+   <img src="{{ url_for('static', filename='../static/image/' + bar) }}"  />
+      
+</div> 
+<div class="col-xs-2">
+
+</div>
+{% endblock %}
+

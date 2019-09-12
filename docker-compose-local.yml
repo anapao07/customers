@@ -1,10 +1,21 @@
 version: '3'
 services:
     web:
+        container_name: flask
         network_mode: host
         build: .
         ports:
             - "5000:5000"
         volumes:
-            - .:/customers
+            - .:/home/customers
     
+    postgresql:
+        container_name: postgres
+        image: postgres:9.6
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: desarrollo
+            POSTGRES_PASSWORD: desarrollo
+        volumes:
+            - ./db-data:/var/lib/postgresql/data

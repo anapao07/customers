@@ -26,7 +26,7 @@
             {% for rows in rows_p %}
                <tr>
                   <th scope="row"><a  type="hidden" href="/edit/{{rows["id"]}}">{{rows["nombre"]}}</a></th>
-                  <td scope="row">{{rows["descripcion"]}}</td>
+                  <td scope="row">{{rows["descripción"]}}</td>
                   <th scope="row">{{ rows["cantidad"]}}</th>
                   <th scope="row"><a href="/delete/{{rows["id"]}}" ><button onclick="return alerta()">Eliminar</button></a></th>
                   </tr>
@@ -34,9 +34,9 @@
    </table>
    </div>
  
-   <img src="{{ url_for('static', filename='../static/image/' +circle) }}"  />
-   <img src="{{ url_for('static', filename='../static/image/' + bar) }}"  />
-      
+<!--   <img src="{{ url_for('static', filename='../static/image/' +circle) }}"  />-->
+<!--   <img src="{{ url_for('static', filename='../static/image/' + bar) }}"  />-->
+<!--      -->
 </div> 
 <div class="col-xs-2">
 

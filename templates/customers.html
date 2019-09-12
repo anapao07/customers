@@ -15,6 +15,7 @@
      </div>
    <table class="table table-stripe" align="center">
          <thead>
+           
             <th scope="col">Nombre</th>
             <th scope="col">RFC</th>
             <th scope="col">Ciudad</th>
@@ -25,6 +26,7 @@
       
             {% for rows in rows_c %}
                <tr>
+                 
                   <th scope="row"><a  type="hidden" href="/editcust/{{rows["id"]}}">{{rows["nombre"]}}</a></th>
                   <th scope="row">{{rows["rfc"]}}</th>
                   <th scope="row">{{ rows["ciudad"]}}</th>

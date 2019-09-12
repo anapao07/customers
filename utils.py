@@ -1,77 +1,78 @@
-
 import matplotlib
 import matplotlib.pyplot as plt
 from flask import render_template
-import numpy as np	
+import numpy as np
 from datetime import datetime
 import glob
 import os
-import sqlite3 
+import psycopg2
+import psycopg2.extras
 
 
-def insert_product_customer(id,lista): 
-     try:
+def insert_product_customer(id,lista):
+    try:
         conn = connection_db()
-        conn.row_factory = sqlite3.Row
         c = conn.cursor()
         for ids in lista:
             c.execute(f"""insert  into custom_prod(product_id, customer_id) 
                        values ({ids},{id})""")
-            print("insertado")   
             conn.commit()
-     except Exception as e:
-         print(e)
-     finally:
-         conn.close()  
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
+
 
 def get_product_cust(id):
     try:
         conn = connection_db()
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-        sentencia = "select c.id as idcliente, p.id, p.nombre as producto " \
-        +"from custom_prod AS cp left join  customer as c on " \
-        +"c.id = cp.customer_id left join producto as p " \
-        +"on cp.product_id = p.id where c.id = ?;"
-        c.execute(sentencia, [id])
+        c = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        c.execute("""select c.id as idcliente, p.id, p.nombre as producto
+                    from custom_prod AS cp left join  customer as c on
+                    c.id = cp.customer_id left join producto as p
+                    on cp.product_id = p.id where c.id = (%s); """,(id))
+
         rows_prod_cust = c.fetchall()
         return rows_prod_cust
     except Exception as e:
         print(e)
-    finally:                                                                
+    finally:
         conn.close()
+
 
 def get_product_p(id):
     try:
         conn = connection_db()
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-        sentencia = "SELECT id,nombre FROM producto WHERE id NOT IN (" \
-        +"SELECT product_id FROM custom_prod WHERE customer_id = ?)"
-        c.execute(sentencia, [id])
+        # conn.row_factory = sqlite3.Row
+        # c = conn.cursor()
+        c = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        sentencia = "SELECT id,nombre FROM producto WHERE id NOT IN ( SELECT product_id FROM custom_prod WHERE customer_id = id)"
+        c.execute(sentencia)
         rows_rest = c.fetchall()
         return rows_rest
     except Exception as e:
         print(e)
-    finally:                                                                
-        conn.close()        
+    finally:
+        conn.close()
+
 
 def get_data_cp():
     try:
         conn = connection_db()
-        conn.row_factory = sqlite3.Row
+        # conn.row_factory = sqlite3.Row
         c = conn.cursor()
         c.execute("select c.nombre as cliente, p.nombre as producto " \
-        +"from custom_prod AS cp left join  customer as c " \
-        +"on  c.id = cp.customer_id left join producto as p " \
-        +"on cp.product_id = p.id")
+                  + "from custom_prod AS cp left join  customer as c " \
+                  + "on  c.id = cp.customer_id left join producto as p " \
+                  + "on cp.product_id = p.id")
         row_cp = c.fetchall()
-        return render_template("assignation.html",rows = row_cp)
+        return render_template("assignation.html", rows=row_cp)
 
     except Exception as e:
         print(e)
-    finally:                                                                
+    finally:
         conn.close()
+
 
 def insert(dictionary):
     try:
@@ -83,12 +84,12 @@ def insert(dictionary):
         c.execute(f"""INSERT INTO producto(nombre,descripcion,cantidad) 
                     values ('{nombre}','{descripcion}',{cantidad})""")
         conn.commit()
-        
+
     except Exception as e:
         print(e)
     finally:
         conn.close()
-    
+
     return render_template("view.html")
 
 
@@ -96,7 +97,7 @@ def insert2(dictionary2):
     try:
         conn = connection_db()
         c = conn.cursor()
-        nombre = dictionary2['name1'] 
+        nombre = dictionary2['name1']
         rfc = dictionary2['rfc1']
         ciudad = dictionary2['city1']
         direccion = dictionary2['dire1']
@@ -109,38 +110,42 @@ def insert2(dictionary2):
         conn.close()
     return render_template("view2.html")
 
-def connection_db():
-    conn = sqlite3.connect('sql/producto.db')
-    return conn
 
+def connection_db():
+    # conn = sqlite3.connect('/customers/sql/producto.db')
+    conn = psycopg2.connect(user="desarrollo", password="desarrollo", host="127.0.0.1", port="5432",
+                            database="producto")
+    return conn
 
 
 def graphical_product():
     try:
         dateTimeObj = datetime.now()
         conn = connection_db()
-        conn.row_factory = lambda cursor, row: row[0]
-        c = conn.cursor()
+        # conn.row_factory = lambda cursor, row: row[0]
+        # c = conn.cursor()
+        c = conn.cursor(cursor_factory=psycopg2.extras.DictRow)
         cantidad = c.execute('select cantidad value from producto').fetchall()
         print(cantidad)
         c = c.execute("SELECT nombre FROM producto")
-        lab =c.fetchall()
+        lab = c.fetchall()
         print(lab)
         sizes = cantidad
         fig1, ax1 = plt.subplots()
-        ax1.pie(sizes,labels=lab,autopct='%1.0f%%',
+        ax1.pie(sizes, labels=lab, autopct='%1.0f%%',
                 shadow=True, startangle=100)
-        ax1.axis('equal')  
+        ax1.axis('equal')
         timeStr = dateTimeObj.strftime("%H:%M:%S")
-        print('Current Timestamp : '+ timeStr)     
-        nombre = "products" + timeStr  +".png"
-        plt.savefig("static/image/"+ nombre)
+        print('Current Timestamp : ' + timeStr)
+        nombre = "products" + timeStr + ".png"
+        plt.savefig("/home/customers/static/image/" + nombre)
         plt.show()
         return nombre
     except Exception as e:
         print(e)
     finally:
         conn.close()
+
 
 def graphical_productsb():
     try:
@@ -150,13 +155,13 @@ def graphical_productsb():
         c = conn.cursor()
         cantidad = c.execute('select cantidad value from producto').fetchall()
         c = c.execute("SELECT nombre FROM producto")
-        lab =c.fetchall()
+        lab = c.fetchall()
         labels = lab
         products = cantidad
         x = np.arange(len(labels))  # the label locations
         width = 0.35  # the width of the bars
         fig, ax = plt.subplots()
-        rects1 = ax.bar(x - width/2, products, width, label='Productos')
+        rects1 = ax.bar(x - width / 2, products, width, label='Productos')
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax.set_ylabel('Cantidad')
         ax.set_title('Productos')
@@ -164,50 +169,52 @@ def graphical_productsb():
         ax.set_xticklabels(labels)
         ax.legend()
         timeStr = dateTimeObj.strftime("%H:%M:%S")
-        print('Current Timestamp : '+ timeStr)
-        nombre = "productbarra" + timeStr  +".png"
+        print('Current Timestamp : ' + timeStr)
+        nombre = "productbarra" + timeStr + ".png"
         for rect in rects1:
             height = rect.get_height()
             ax.annotate('{}'.format(height),
-            xy=(rect.get_x() + rect.get_width() / 2, height),
-            xytext=(0, 3),  # 3 points vertical offset
-            textcoords="offset points",
-            ha='center', va='bottom')
+                        xy=(rect.get_x() + rect.get_width() / 2, height),
+                        xytext=(0, 3),  # 3 points vertical offset
+                        textcoords="offset points",
+                        ha='center', va='bottom')
             fig.tight_layout()
-            plt.savefig("static/image/"+ nombre)
+            plt.savefig("/home/customers/static/image/" + nombre)
         return nombre
     except Exception as e:
         print(e)
     finally:
         conn.close()
 
+
 def graphical_customerspro():
     try:
         conn = connection_db()
-        c = conn.cursor()
-        resutados_cliente_producto = c.execute("""SELECT c.nombre as cliente,
-                p.nombre as producto, p.cantidad FROM custom_prod AS cp
-                LEFT JOIN  customer as c on c.id = cp.customer_id 
-                LEFT JOIN producto as p on cp.product_id = p.id""").fetchall()
-        productos = c.execute("SELECT nombre FROM producto").fetchall()
-        l =[num for elem in productos for num in elem]
+        # c = conn.cursor()
+        c = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        resutados_cliente_producto = c.execute("SELECT c.nombre as cliente, p.nombre as producto, p.cantidad FROM custom_prod AS cp LEFT JOIN  customer as c on c.id = cp.customer_id LEFT JOIN producto as p on cp.product_id = p.id")
 
-        clientes = c.execute("SELECT nombre FROM customer").fetchall()
+        productos = c.execute("SELECT nombre FROM producto")
+
+
+        l = [num for elem in productos for num in elem]
+        c.execute("SELECT nombre FROM customer")
+        clientes = c.fetchall()
         # Generador que convierte las tuplas en lista 
         lista_todos_productos = [value[0] for value in productos]
         cliente_producto = {}
         results = {}
         for cliente in clientes:
             cliente_producto[cliente[0]] = None
-            results[cliente[0]] = None 
+            results[cliente[0]] = None
         for cliente in cliente_producto.keys():
             cliente_producto[cliente] = dict.fromkeys(lista_todos_productos, 0)
         for value in resutados_cliente_producto:
-            cliente_producto[value[0]][value[1]] = value[2] 
-        values_clientes = {}    
-        for value,key in zip(cliente_producto.values(), cliente_producto.keys()):
+            cliente_producto[value[0]][value[1]] = value[2]
+        values_clientes = {}
+        for value, key in zip(cliente_producto.values(), cliente_producto.keys()):
             values_clientes[key] = list(value.values())
-            
+
         category_names = l
         results = values_clientes
         nombre = survey(results, category_names)
@@ -215,7 +222,8 @@ def graphical_customerspro():
     except Exception as e:
         print(e)
     finally:
-        conn.close()   
+        conn.close()
+
 
 def survey(results, category_names):
     dateTimeObj = datetime.now()
@@ -223,7 +231,7 @@ def survey(results, category_names):
     data = np.array(list(results.values()))
     data_cum = data.cumsum(axis=1)
     category_colors = plt.get_cmap('RdYlGn')(
-    np.linspace(0.15, 0.85, data.shape[1]))
+        np.linspace(0.15, 0.85, data.shape[1]))
     fig, ax = plt.subplots(figsize=(15, 8))
     ax.invert_yaxis()
     ax.xaxis.set_visible(False)
@@ -242,13 +250,13 @@ def survey(results, category_names):
     ax.legend(ncol=len(category_names), bbox_to_anchor=(0, 1),
               loc='lower left', fontsize='small')
     timeStr = dateTimeObj.strftime("%H:%M:%S")
-    print('Current Timestamp : '+ timeStr)     
-    nombre = "productlista" + timeStr  +".png"
-    plt.savefig("static/image/"+ nombre)          
+    print('Current Timestamp : ' + timeStr)
+    nombre = "productlista" + timeStr + ".png"
+    plt.savefig("/home/customers/static/image/" + nombre)
     return nombre
 
+
 def remove():
-    filelist=glob.glob("static/image/*.png")
+    filelist = glob.glob("/home/customers/static/image/*.png")
     for file in filelist:
         os.remove(file)
-
